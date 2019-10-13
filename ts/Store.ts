@@ -1,25 +1,25 @@
-import {combineReducers, createStore} from 'redux';
-import { UserReducer } from './reducers/UserReducer';
-import IUser from './states/IUser';
+import { combineReducers, createStore } from 'redux';
+
+import { TaskReducer } from './reducers/TaskReducer';
+import { ITaskList } from './states/ITask';
 
 /**
  * store のデータ型を定義する。（親state）
  *
  * プロパティには、管理する child_state を指定する
  */
-export interface IState { // --(a)
-    User: IUser;
+export interface IState {
+    taskList: ITaskList;
     // state が増えたら足していく
 }
 
 // 複数の reducer を束ねる
-const combinedReducer = combineReducers<IState>({ // --(b)
-    User: UserReducer,
+const combinedReducer = combineReducers<IState>({
+    taskList: TaskReducer, // 追加
     // reducer が増えたら足していく
 });
 
 // グローバルオブジェクトとして、store を作成する。
-export const store = createStore(combinedReducer); // --(c)
+const store = createStore(combinedReducer);
 
-// import store from './Store' とアクセスできるように default として定義する
 export default store;

@@ -17,4 +17,5 @@ $ npm install --save reset-css
 $ npm install --save-dev style-loader css-loader
 # edit webpavk.config.js for css-loader
 $ npm install --save moment && npm install --save-dev @types/moment
+# タスクリストの各行の component を作る
 ```

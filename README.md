@@ -12,4 +12,5 @@ See https://qiita.com/EBIHARA_kenji/items/25e59f7132b96cb886f3
 
 ```
 $ npm install --save styled-components && npm install --save-dev @types/styled-components
+$ npm install --save reset-css
 ```

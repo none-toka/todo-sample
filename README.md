@@ -21,4 +21,5 @@ $ npm install --save moment && npm install --save-dev @types/moment
 $ npm install --save react-datepicker@1.7.0 && npm install --save-dev @types/react-datepicker@1.1.7
 # タスクを追加する component (不完全)
 # タスクリストコンポーネントの作成
+# fix index.tsx
 ```

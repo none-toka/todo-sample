@@ -19,4 +19,5 @@ $ npm install --save-dev style-loader css-loader
 $ npm install --save moment && npm install --save-dev @types/moment
 # タスクリストの各行の component を作る
 $ npm install --save react-datepicker@1.7.0 && npm install --save-dev @types/react-datepicker@1.1.7
+# タスクを追加する component (不完全)
 ```

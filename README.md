@@ -22,4 +22,5 @@ $ npm install --save react-datepicker@1.7.0 && npm install --save-dev @types/rea
 # タスクを追加する component (不完全)
 # タスクリストコンポーネントの作成
 # fix index.tsx
+# タスクを追加する component (完全)
 ```

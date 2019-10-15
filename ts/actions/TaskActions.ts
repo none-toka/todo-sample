@@ -46,3 +46,15 @@ export const DELETE_TASK = UUID();
 export interface IDeleteAction extends Action {
     taskId: string;
 }
+
+/**
+ * タスクロード開始のアクションタイプ
+ */
+export const TOGGLE_SHOW_SPINNER = UUID();
+
+/**
+ * タスクロード開始のアクション
+ */
+// tslint:disable-next-line:no-empty-interface
+export interface IToggleShowSpinnerAction extends Action {
+}

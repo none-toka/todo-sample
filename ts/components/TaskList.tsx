@@ -9,6 +9,7 @@ import store, { IState } from '../Store';
 import { AddTask } from './AddTask';
 import { $COLOR_FOREGROUND_REVERSE, $COLOR_PRIMARY_0, $COLOR_PRIMARY_3 } from './FoundationStyles';
 import TaskRow from './TaskRow';
+import { Loading } from './Loading';
 
 //#region styled
 const MainContainer = Styled.div`
@@ -65,6 +66,7 @@ class TodoList extends React.Component<ITaskList, {}> {
                         {taskListElems /* ...(b')*/}
                     </TaskList>
                 </MainContainer>
+                <Loading shown={this.props.shownLoading} />{/* <-追加 */}
             </div>
         );
     }

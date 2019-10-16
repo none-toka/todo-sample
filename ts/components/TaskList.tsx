@@ -3,9 +3,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Styled from 'styled-components';
 
-import { createShowTasksAction } from '../actions/TaskActionCreators';
+import { createLoadTasksAction } from '../actions/TaskActionCreators';
 import { ITaskList } from '../states/ITask';
-import store, { IState } from '../Store';
+import store from '../Store';
+import { IState } from '../IState';
 import { AddTask } from './AddTask';
 import { $COLOR_FOREGROUND_REVERSE, $COLOR_PRIMARY_0, $COLOR_PRIMARY_3 } from './FoundationStyles';
 import TaskRow from './TaskRow';
@@ -45,7 +46,7 @@ const TaskList = Styled.div`
 
 class TodoList extends React.Component<ITaskList, {}> {
     public componentDidMount() {
-        store.dispatch(createShowTasksAction([])); //...(a)
+        store.dispatch(createLoadTasksAction(store.dispatch)); //...(a)
     }
     public render() {
         const { tasks } = this.props;

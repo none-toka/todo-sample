@@ -97,7 +97,7 @@ export class AddTask extends React.Component<IProps, ILocalState> {
      * 追加ボタンを押すと、タスク一覧にタスクを追加する
      */
     private onClickAdd = (e: React.MouseEvent) => {
-        store.dispatch(createAddTaskAction(this.state.taskName, this.state.deadline));
+        store.dispatch(createAddTaskAction(this.state.taskName, this.state.deadline, store)); // <- 変更
         const m = Moment(new Date()).add(1, 'days');
         this.setState({
             deadline: m.toDate(),

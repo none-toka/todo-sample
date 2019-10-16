@@ -108,13 +108,14 @@ class TaskRow extends React.Component<ITask, {}> {
      * ボックスをクリックすると、タスク完了 <-> 未完了 がトグルする
      */
     private onClickBox = (id: string, e: React.MouseEvent<HTMLElement>) => {
-        store.dispatch(createToggleCompleteAction(id));
+        store.dispatch(createToggleCompleteAction(id, store));
     }
+    
     /**
      * 削除ボタンを押すと、タスクを削除する
      */
     private onClickDelete = (id: string,  e: React.MouseEvent) => {
-        store.dispatch(createDeleteTaskAction(id));
+        store.dispatch(createDeleteTaskAction(id, store));
         // クリックイベントを親要素の伝播させない
         e.stopPropagation();
     }

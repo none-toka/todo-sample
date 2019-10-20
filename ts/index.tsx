@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDom from 'react-dom';
 import { Provider } from 'react-redux';
-import TaskList from './components/TaskList'; import Store from './Store';
+import TaskList from './components/TaskList';
+import Store from './Store';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle } from './components/FoundationStyles';
 

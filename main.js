@@ -17,7 +17,8 @@ function createWindow() {
         }
     })
     // index.html をロードする
-    win.loadFile('index.html')
+    const path = require('path');
+    win.loadFile(path.join(__dirname, './index.html'));
     // 起動オプションに、 "--debug"があれば開発者ツールを起動する
     if (process.argv.find((arg) => arg === '--debug')) {
         win.webContents.openDevTools()

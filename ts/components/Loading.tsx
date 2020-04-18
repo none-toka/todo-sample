@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import Styled, { keyframes } from "styled-components";
 import { $COLOR_PRIMARY_0, $COLOR_PRIMARY_1 } from "./FoundationStyles";
 

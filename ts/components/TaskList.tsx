@@ -1,16 +1,19 @@
-import Moment from 'moment';
-import React from 'react';
-import { connect } from 'react-redux';
-import Styled from 'styled-components';
+import Moment from "moment";
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
+import Styled from "styled-components";
 
-import { createLoadTasksAction } from '../actions/TaskActionCreators';
-import { ITaskList } from '../states/ITask';
-import store from '../Store';
-import { IState } from '../IState';
-import { AddTask } from './AddTask';
-import { $COLOR_FOREGROUND_REVERSE, $COLOR_PRIMARY_0, $COLOR_PRIMARY_3 } from './FoundationStyles';
-import TaskRow from './TaskRow';
-import { Loading } from './Loading';
+import { createLoadTasksAction } from "../actions/TaskActionCreators";
+import { ITaskList } from "../states/ITask";
+import store from "../Store";
+import { IState } from "../IState";
+import { AddTask } from "./AddTask";
+import {
+  $COLOR_FOREGROUND_REVERSE,
+  $COLOR_PRIMARY_3,
+} from "./FoundationStyles";
+import TaskRow from "./TaskRow";
+import { Loading } from "./Loading";
 
 //#region styled
 const MainContainer = Styled.div`
@@ -28,14 +31,6 @@ const Header = Styled.h1`
     text-align: center;
 `;
 
-const AddButton = Styled.button`
-    border-radius: 5px;
-    background-color: ${$COLOR_PRIMARY_0};
-    color: ${$COLOR_FOREGROUND_REVERSE};
-    width: 100%;
-    padding: 1em;
-`;
-
 const TaskList = Styled.div`
     display: flex;
     flex-direction: column;
@@ -44,37 +39,38 @@ const TaskList = Styled.div`
 
 //#endregion
 
-class TodoList extends React.Component<ITaskList, {}> {
-    public componentDidMount() {
-        store.dispatch(createLoadTasksAction(store.dispatch)); //...(a)
-    }
-    public render() {
-        const { tasks } = this.props;
-        const taskListElems = tasks.sort((a, b) => { // ...(b)
-            return (a.deadline < b.deadline) ? -1
-                : (a.deadline.getTime() === b.deadline.getTime()) ? 0 : 1;
-        }).map((it) => {
-            return (
-                <TaskRow key={it.id} {...it} /> // ...(c)
-            );
-        });
-        return (
-            <div>
-                <Header>TODO</Header>
-                <MainContainer>
-                    <AddTask taskName="" deadline={Moment().add(1, 'days').toDate()} />
-                    <TaskList>
-                        {taskListElems /* ...(b')*/}
-                    </TaskList>
-                </MainContainer>
-                <Loading shown={this.props.shownLoading} />{/* <-追加 */}
-            </div>
-        );
-    }
-}
+const TodoList = ({ tasks, shownLoading }: ITaskList) => {
+  useEffect(() => {
+    store.dispatch(createLoadTasksAction(store.dispatch));
+  }, []);
+
+  const taskListElems = tasks
+    .sort((a, b) => {
+      return a.deadline < b.deadline
+        ? -1
+        : a.deadline.getTime() === b.deadline.getTime()
+        ? 0
+        : 1;
+    })
+    .map((it) => {
+      return <TaskRow key={it.id} {...it} />;
+    });
+
+  return (
+    <div>
+      <Header>TODO</Header>
+      <MainContainer>
+        <AddTask taskName="" deadline={Moment().add(1, "days").toDate()} />
+        <TaskList>{taskListElems /* ...(b')*/}</TaskList>
+      </MainContainer>
+      <Loading shown={shownLoading} />
+      {/* <-追加 */}
+    </div>
+  );
+};
 
 const mapStateToProps = (state: IState): ITaskList => {
-    return state.taskList;
+  return state.taskList;
 };
 
 export default connect(mapStateToProps)(TodoList);

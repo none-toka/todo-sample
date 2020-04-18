@@ -1,14 +1,14 @@
-import 'react-datepicker/dist/react-datepicker.css'; // (1)
+import "react-datepicker/dist/react-datepicker.css"; // (1)
 
-import Moment from 'moment';
-import React from 'react';
-import DatePicker from 'react-datepicker';
-import Styled from 'styled-components';
-import { v4 as UUID } from 'uuid';
+import Moment from "moment";
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import Styled from "styled-components";
+import { v4 as UUID } from "uuid";
 
-import { createAddTaskAction } from '../actions/TaskActionCreators';
-import store from '../Store';
-import { $COLOR_SECONDARY_1_3 } from './FoundationStyles';
+import { createAddTaskAction } from "../actions/TaskActionCreators";
+import store from "../Store";
+import { $COLOR_SECONDARY_1_3 } from "./FoundationStyles";
 
 /**
  * コンポーネント プロパティ
@@ -16,17 +16,17 @@ import { $COLOR_SECONDARY_1_3 } from './FoundationStyles';
  * ここでは、初期値として扱う
  */
 interface IProps {
-    /** タスク名 */
-    taskName: string;
-    /** 期限 */
-    deadline: Date;
+  /** タスク名 */
+  taskName: string;
+  /** 期限 */
+  deadline: Date;
 }
 
 interface ILocalState {
-    /** タスク名 */
-    taskName: string;
-    /** 期限 */
-    deadline: Date;
+  /** タスク名 */
+  taskName: string;
+  /** 期限 */
+  deadline: Date;
 }
 
 //#region styled
@@ -63,68 +63,77 @@ const AddButton = Styled.button`
 
 //#endregion
 
-export class AddTask extends React.Component<IProps, ILocalState> {
-    public constructor(props: IProps) {
-        super(props);
-        this.state = {
-            deadline: props.deadline,
-            taskName: props.taskName,
-        };
-    }
+export const AddTask = (props: IProps) => {
+  const [state, setState] = useState<ILocalState>({
+    deadline: props.deadline,
+    taskName: props.taskName,
+  });
 
-    public render() {
-        const date = Moment(this.state.deadline);
-        const taskNameId = UUID();
-        const deadlineId = UUID();
-        return (
-            <Container>
-                <TaskNameBox>
-                    <label htmlFor={taskNameId}>task name</label>
-                    <TextBox id={taskNameId} type="text" value={this.state.taskName}
-                        onChange={ this.onChangeTaskName } />
-                </TaskNameBox>
-                <DeadlineBox>
-                    <label htmlFor={deadlineId}>dead line</label>
-                    <DatePicker selected={date} showTimeSelect={true}
-                        dateFormat="YYYY-MM-DD HH:mm" onChange={ this.onChangeDeadLine } />
-                </DeadlineBox>
-                <AddButton onClick={this.onClickAdd}>+</AddButton>
-            </Container>
-        );
-    }
+  /**
+   * 追加ボタンを押すと、タスク一覧にタスクを追加する
+   */
+  const onClickAdd = () => {
+    store.dispatch(createAddTaskAction(state.taskName, state.deadline, store)); // <- 変更
+    const m = Moment(new Date()).add(1, "days");
+    setState({
+      deadline: m.toDate(),
+      taskName: "",
+    });
+  };
 
-    /**
-     * 追加ボタンを押すと、タスク一覧にタスクを追加する
-     */
-    private onClickAdd = (e: React.MouseEvent) => {
-        store.dispatch(createAddTaskAction(this.state.taskName, this.state.deadline, store)); // <- 変更
-        const m = Moment(new Date()).add(1, 'days');
-        this.setState({
-            deadline: m.toDate(),
-            taskName: '',
-        });
-    }
+  /**
+   * タスク名変更イベントハンドラ
+   *
+   * テキストボックスの内容をローカルステートに反映する
+   */
+  const onChangeTaskName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setState({ ...state, taskName: e.target.value });
+  };
 
-    /**
-     * タスク名変更イベントハンドラ
-     * 
-     * テキストボックスの内容をローカルステートに反映する
-     */
-    private onChangeTaskName = (e: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({
-            taskName: e.target.value,
-        });
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.keyCode === 13) {
+      onClickAdd();
     }
+  };
 
-    /**
-     * 期日を変更したときのイベントハンドラ
-     * 
-     * 変更した日付をローカルステートに反映する
-     * DatePickerの独自プロパティで、引数として日付が渡される
-     */
-    private onChangeDeadLine = (date: Moment.Moment| null) => {
-        this.setState({
-            deadline: !!date ? date.toDate() : new Date(),
-        });
-    }
-}
+  /**
+   * 期日を変更したときのイベントハンドラ
+   *
+   * 変更した日付をローカルステートに反映する
+   * DatePickerの独自プロパティで、引数として日付が渡される
+   */
+  const onChangeDeadLine = (date: Moment.Moment | null) => {
+    setState({
+      ...state,
+      deadline: !!date ? date.toDate() : new Date(),
+    });
+  };
+
+  const date = Moment(state.deadline);
+  const taskNameId = UUID();
+  const deadlineId = UUID();
+  return (
+    <Container>
+      <TaskNameBox>
+        <label htmlFor={taskNameId}>task name</label>
+        <TextBox
+          id={taskNameId}
+          type="text"
+          value={state.taskName}
+          onChange={onChangeTaskName}
+          onKeyDown={onKeyDown}
+        />
+      </TaskNameBox>
+      <DeadlineBox>
+        <label htmlFor={deadlineId}>dead line</label>
+        <DatePicker
+          selected={date}
+          showTimeSelect={true}
+          dateFormat="YYYY-MM-DD HH:mm"
+          onChange={onChangeDeadLine}
+        />
+      </DeadlineBox>
+      <AddButton onClick={onClickAdd}>+</AddButton>
+    </Container>
+  );
+};

@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
-import Styled, { keyframes } from 'styled-components';
-import { $COLOR_PRIMARY_0, $COLOR_PRIMARY_1 } from './FoundationStyles';
+import React from "react";
+import Styled, { keyframes } from "styled-components";
+import { $COLOR_PRIMARY_0, $COLOR_PRIMARY_1 } from "./FoundationStyles";
 
 interface IProps {
-    shown: boolean;
+  shown: boolean;
 }
 
 const BG = Styled.div`
@@ -53,18 +53,17 @@ const Spinner = Styled.div`
     }
 `;
 
-export class Loading extends Component<IProps> {
-    public render() {
-        if (!this.props.shown) {
-            return null;
-        }
-        return (
-            <div>
-                <BG />
-                <SpinnerBox>
-                    <Spinner />
-                </SpinnerBox>
-            </div>
-        );
-    }
-}
+export const Loading = ({ shown }: IProps) => {
+  if (!shown) {
+    return null;
+  }
+  return (
+    <div>
+      <BG />
+      <SpinnerBox>
+        <Spinner />
+      </SpinnerBox>
+      <BG />
+    </div>
+  );
+};

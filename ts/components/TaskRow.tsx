@@ -1,19 +1,23 @@
-import Moment from 'moment';
-import React from 'react';
-import Styled from 'styled-components';
+import Moment from "moment";
+import React from "react";
+import Styled from "styled-components";
 
-import { createDeleteTaskAction, createToggleCompleteAction } from '../actions/TaskActionCreators';
-import { ITask } from '../states/ITask';
-import store from '../Store';
-import { $COLOR_SECONDARY_1_3, $COLOR_SECONDARY_2_0 } from './FoundationStyles';
+import {
+  createDeleteTaskAction,
+  createToggleCompleteAction,
+} from "../actions/TaskActionCreators";
+import { ITask } from "../states/ITask";
+import store from "../Store";
+import { $COLOR_SECONDARY_1_3, $COLOR_SECONDARY_2_0 } from "./FoundationStyles";
 
 //#region styled
 /**
  * 行の大外枠...(1)
  */
-const Task = Styled.div<{expiration: boolean; }>`
+const Task = Styled.div<{ expiration: boolean }>`
     align-items: center;
-    background-color: ${(p) => p.expiration ? 'inherit' : $COLOR_SECONDARY_2_0};
+    background-color: ${(p) =>
+      p.expiration ? "inherit" : $COLOR_SECONDARY_2_0};
     border-radius: 5px;
     cursor: pointer;
     border: 1px solid rgb(200,200,200);
@@ -84,41 +88,32 @@ const Deadline = Styled.div`
 
 //#endregion
 
-class TaskRow extends React.Component<ITask, {}> {
-    public render() {
-        const it = this.props;
-        const deadlineString = Moment(it.deadline).format('YYYY-MM-DD hh:mm');
-        return (
-            <Task expiration={new Date() < it.deadline || it.complete}
-                onClick={this.onClickBox.bind(this, it.id)}>
-                <TaskCheckBox>
-                    <TaskCheck>
-                        {it.complete ? '✔' : null}
-                    </TaskCheck>
-                </TaskCheckBox>
-                <TaskBody>
-                    <TaskName>{it.taskName}</TaskName>
-                    <Deadline>⏰{deadlineString}</Deadline>
-                </TaskBody>
-                <TaskRemove onClick={this.onClickDelete.bind(this, it.id)}>❌</TaskRemove>
-            </Task>
-        );
-    }
-    /**
-     * ボックスをクリックすると、タスク完了 <-> 未完了 がトグルする
-     */
-    private onClickBox = (id: string, e: React.MouseEvent<HTMLElement>) => {
-        store.dispatch(createToggleCompleteAction(id, store));
-    }
-    
-    /**
-     * 削除ボタンを押すと、タスクを削除する
-     */
-    private onClickDelete = (id: string,  e: React.MouseEvent) => {
-        store.dispatch(createDeleteTaskAction(id, store));
-        // クリックイベントを親要素の伝播させない
-        e.stopPropagation();
-    }
-}
+const TaskRow = (props: ITask) => {
+  const { deadline, complete, taskName, id } = props;
+
+  const deadlineString = Moment(deadline).format("YYYY-MM-DD hh:mm");
+
+  const onClickBox = () => {
+    store.dispatch(createToggleCompleteAction(id, store));
+  };
+  const onClickDelete = (e: React.MouseEvent) => {
+    store.dispatch(createDeleteTaskAction(id, store));
+    // クリックイベントを親要素の伝播させない
+    e.stopPropagation();
+  };
+
+  return (
+    <Task expiration={new Date() < deadline || complete} onClick={onClickBox}>
+      <TaskCheckBox>
+        <TaskCheck>{complete ? "✔" : null}</TaskCheck>
+      </TaskCheckBox>
+      <TaskBody>
+        <TaskName>{taskName}</TaskName>
+        <Deadline>⏰{deadlineString}</Deadline>
+      </TaskBody>
+      <TaskRemove onClick={onClickDelete}>❌</TaskRemove>
+    </Task>
+  );
+};
 
 export default TaskRow;

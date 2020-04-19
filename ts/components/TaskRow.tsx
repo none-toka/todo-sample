@@ -1,13 +1,13 @@
 import Moment from "moment";
-import React from "react";
+import React, { useContext } from "react";
 import Styled from "styled-components";
 
 import {
   createDeleteTaskAction,
   createToggleCompleteAction,
-} from "../actions/TaskActionCreators";
+} from "../actions/TaskActions";
 import { ITask } from "../states/ITask";
-import store from "../Store";
+import { Store } from "../Store";
 import { $COLOR_SECONDARY_1_3, $COLOR_SECONDARY_2_0 } from "./FoundationStyles";
 
 //#region styled
@@ -89,15 +89,16 @@ const Deadline = Styled.div`
 //#endregion
 
 const TaskRow = (props: ITask) => {
+  const { dispatch } = useContext(Store);
   const { deadline, complete, taskName, id } = props;
 
   const deadlineString = Moment(deadline).format("YYYY-MM-DD hh:mm");
 
   const onClickBox = () => {
-    store.dispatch(createToggleCompleteAction(id, store));
+    dispatch(createToggleCompleteAction(id));
   };
   const onClickDelete = (e: React.MouseEvent) => {
-    store.dispatch(createDeleteTaskAction(id, store));
+    dispatch(createDeleteTaskAction(id));
     // クリックイベントを親要素の伝播させない
     e.stopPropagation();
   };

@@ -1,21 +1,20 @@
-import React from 'react';
-import ReactDom from 'react-dom';
-import { Provider } from 'react-redux';
-import TaskList from './components/TaskList';
-import Store from './Store';
-import { ThemeProvider } from 'styled-components';
-import { GlobalStyle } from './components/FoundationStyles';
+import React from "react";
+import ReactDom from "react-dom";
+import TaskList from "./components/TaskList";
+import { ThemeProvider } from "styled-components";
+import { GlobalStyle } from "./components/FoundationStyles";
+import StoreProvider from "./Store";
 
-const container = document.getElementById('contents');
+const container = document.getElementById("contents");
 
 ReactDom.render(
-    <div>
-        <Provider store={Store}>
-            <TaskList />
-        </Provider>
-        <ThemeProvider theme={{}}>
-            <GlobalStyle theme="" />
-        </ThemeProvider>
-    </div>,
-    container,
+  <div>
+    <StoreProvider>
+      <TaskList />
+    </StoreProvider>
+    <ThemeProvider theme={{}}>
+      <GlobalStyle theme="" />
+    </ThemeProvider>
+  </div>,
+  container
 );

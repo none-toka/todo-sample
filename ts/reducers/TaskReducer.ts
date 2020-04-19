@@ -1,61 +1,88 @@
-import Clone from 'clone';
-import Redux from 'redux';
+import { createTask } from "../states/ITask";
+import { IState, initialState } from "../IState";
+import { ITask } from "../states/ITask";
+import {
+  SHOW_TASKS,
+  ADD_TASK,
+  TOGGLE_COMPLETE_TASK,
+  DELETE_TASK,
+  TOGGLE_SHOW_SPINNER,
+  TaskActions,
+} from "../actions/TaskActions";
 
-import * as Action from '../actions/TaskActions';
-import { createTask, initTaskList, ITaskList } from '../states/ITask';
-import createA2RMapper from '../utils/ActionToReducerMapper';
-
-const a2RMapper = createA2RMapper<ITaskList>();
-
-/** タスク一覧を表示する */
-a2RMapper.addWork<Action.IShowTaskAction>(
-    Action.SHOW_TASKS,
-    (state, action) => {
-        state.tasks = Clone(action.tasks);
-    },
-);
-
-/** タスクを追加する */
-a2RMapper.addWork<Action.IAddTaskAction>(
-    Action.ADD_TASK,
-    (state, action) => {
-        state.tasks.push(createTask(action.taskName, action.deadline));
-    },
-);
-
-/** タスクを完了/未完了を切り替える */
-a2RMapper.addWork<Action.IToggleCompleteAction>(
-    Action.TOGGLE_COMPLETE_TASK,
-    (state, action) => {
-        const {tasks} = state;
-        // 上記は下記と同じ意味
-        // const tasks = state.tasks
-        const target = tasks.find((it) => it.id === action.taskId);
-        if (!target) { return; }
-        target.complete = !target.complete;
-    },
-);
-
-/** タスクを削除する */
-a2RMapper.addWork<Action.IDeleteAction>(
-    Action.DELETE_TASK,
-    (state, action) => {
-        const {tasks} = state;
-        const target = tasks.find((it) => it.id === action.taskId);
-        if (!target) { return; }
-        // 指定したID以外のオブジェクトを抽出し、それを新しいリストとする
-        state.tasks = tasks.filter((it) => it.id !== action.taskId);
-    },
-);
-
-a2RMapper.addWork<Action.IToggleShowSpinnerAction>(
-    Action.TOGGLE_SHOW_SPINNER,
-    (state, action) => {
-        state.shownLoading = !state.shownLoading;
-    },
-);
-
-/** Reducer 本体 */
-export const TaskReducer: Redux.Reducer<ITaskList> = (state = initTaskList, action) => {
-    return a2RMapper.execute(state, action);
+const addTask = (tasks: ITask[], taskName: string, deadline: Date) => {
+  return [...tasks, createTask(taskName, deadline)];
 };
+
+const toggleCompleteTask = (tasks: ITask[], taskId: string) => {
+  const target = tasks.findIndex((it) => it.id === taskId);
+  if (target < 0) {
+    return;
+  }
+  return tasks.map((task, index) => {
+    return index === target
+      ? {
+          ...task,
+          complete: !task.complete,
+        }
+      : task;
+  });
+};
+
+const deleteTask = (tasks: ITask[], taskId: string) => {
+  const target = tasks.findIndex((it) => it.id === taskId);
+  if (target < 0) {
+    return;
+  }
+  return tasks.filter((it, index) => index !== target);
+};
+
+const updateTasks = (state: IState, tasks?: ITask[]) => {
+  return !!tasks
+    ? {
+        ...state,
+        taskList: {
+          ...state.taskList,
+          tasks: tasks,
+        },
+      }
+    : state;
+};
+
+const toggleShowLoading = (state: IState) => {
+  return {
+    ...state,
+    taskList: {
+      ...state.taskList,
+      shownLoading: !state.taskList.shownLoading,
+    },
+  };
+};
+
+const reducer = (state: IState = initialState, action: TaskActions) => {
+  switch (action.type) {
+    case SHOW_TASKS:
+      return updateTasks(state, action.tasks);
+    case ADD_TASK:
+      return updateTasks(
+        state,
+        addTask(state.taskList.tasks, action.taskName, action.deadline)
+      );
+    case TOGGLE_COMPLETE_TASK:
+      return updateTasks(
+        state,
+        toggleCompleteTask(state.taskList.tasks, action.taskId)
+      );
+    case DELETE_TASK:
+      return updateTasks(
+        state,
+        deleteTask(state.taskList.tasks, action.taskId)
+      );
+    case TOGGLE_SHOW_SPINNER:
+      return toggleShowLoading(state);
+    default:
+      return state;
+  }
+};
+
+export default reducer;

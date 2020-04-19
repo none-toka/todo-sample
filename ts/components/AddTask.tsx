@@ -1,13 +1,13 @@
 import "react-datepicker/dist/react-datepicker.css"; // (1)
 
 import Moment from "moment";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import DatePicker from "react-datepicker";
 import Styled from "styled-components";
 import { v4 as UUID } from "uuid";
 
-import { createAddTaskAction } from "../actions/TaskActionCreators";
-import store from "../Store";
+import { createAddTaskAction } from "../actions/TaskActions";
+import { Store } from "../Store";
 import { $COLOR_SECONDARY_1_3 } from "./FoundationStyles";
 
 /**
@@ -64,18 +64,19 @@ const AddButton = Styled.button`
 //#endregion
 
 export const AddTask = (props: IProps) => {
-  const [state, setState] = useState<ILocalState>({
+  const [localState, setLocalState] = useState<ILocalState>({
     deadline: props.deadline,
     taskName: props.taskName,
   });
+  const { dispatch } = useContext(Store);
 
   /**
    * 追加ボタンを押すと、タスク一覧にタスクを追加する
    */
   const onClickAdd = () => {
-    store.dispatch(createAddTaskAction(state.taskName, state.deadline, store)); // <- 変更
+    dispatch(createAddTaskAction(localState.taskName, localState.deadline));
     const m = Moment(new Date()).add(1, "days");
-    setState({
+    setLocalState({
       deadline: m.toDate(),
       taskName: "",
     });
@@ -87,7 +88,7 @@ export const AddTask = (props: IProps) => {
    * テキストボックスの内容をローカルステートに反映する
    */
   const onChangeTaskName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState({ ...state, taskName: e.target.value });
+    setLocalState({ ...localState, taskName: e.target.value });
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -103,13 +104,13 @@ export const AddTask = (props: IProps) => {
    * DatePickerの独自プロパティで、引数として日付が渡される
    */
   const onChangeDeadLine = (date: Moment.Moment | null) => {
-    setState({
-      ...state,
+    setLocalState({
+      ...localState,
       deadline: !!date ? date.toDate() : new Date(),
     });
   };
 
-  const date = Moment(state.deadline);
+  const date = Moment(localState.deadline);
   const taskNameId = UUID();
   const deadlineId = UUID();
   return (
@@ -119,7 +120,7 @@ export const AddTask = (props: IProps) => {
         <TextBox
           id={taskNameId}
           type="text"
-          value={state.taskName}
+          value={localState.taskName}
           onChange={onChangeTaskName}
           onKeyDown={onKeyDown}
         />

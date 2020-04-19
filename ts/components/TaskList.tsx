@@ -1,12 +1,9 @@
 import Moment from "moment";
-import React, { useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useEffect, useContext } from "react";
 import Styled from "styled-components";
 
-import { createLoadTasksAction } from "../actions/TaskActionCreators";
-import { ITaskList } from "../states/ITask";
-import store from "../Store";
-import { IState } from "../IState";
+import { createToggleShowSpinnerAction } from "../actions/TaskActions";
+import { Store } from "../Store";
 import { AddTask } from "./AddTask";
 import {
   $COLOR_FOREGROUND_REVERSE,
@@ -31,7 +28,7 @@ const Header = Styled.h1`
     text-align: center;
 `;
 
-const TaskList = Styled.div`
+const TaskListContainer = Styled.div`
     display: flex;
     flex-direction: column;
     margin-top: 1em;
@@ -39,9 +36,11 @@ const TaskList = Styled.div`
 
 //#endregion
 
-const TodoList = ({ tasks, shownLoading }: ITaskList) => {
+const TaskList = () => {
+  const { state, dispatch } = useContext(Store);
+  const { tasks, shownLoading } = state.taskList;
   useEffect(() => {
-    store.dispatch(createLoadTasksAction(store.dispatch));
+    dispatch(createToggleShowSpinnerAction());
   }, []);
 
   const taskListElems = tasks
@@ -61,7 +60,7 @@ const TodoList = ({ tasks, shownLoading }: ITaskList) => {
       <Header>TODO</Header>
       <MainContainer>
         <AddTask taskName="" deadline={Moment().add(1, "days").toDate()} />
-        <TaskList>{taskListElems /* ...(b')*/}</TaskList>
+        <TaskListContainer>{taskListElems /* ...(b')*/}</TaskListContainer>
       </MainContainer>
       <Loading shown={shownLoading} />
       {/* <-追加 */}
@@ -69,8 +68,4 @@ const TodoList = ({ tasks, shownLoading }: ITaskList) => {
   );
 };
 
-const mapStateToProps = (state: IState): ITaskList => {
-  return state.taskList;
-};
-
-export default connect(mapStateToProps)(TodoList);
+export default TaskList;
